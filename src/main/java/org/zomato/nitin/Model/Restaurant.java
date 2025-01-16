@@ -1,5 +1,7 @@
 package org.zomato.nitin.Model;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -10,10 +12,16 @@ public class Restaurant {
 
     @Id
     private String id;
+    @Indexed(unique = true)
+    @JsonProperty("Name")
     private String name;
+    @JsonProperty("Address")
     private String address;
+    @JsonProperty("Cuisine")
     private String cuisine;
+    @JsonProperty("Menu")
     private List<String> menuItems;
+    @JsonProperty("Reviews")
     private List<Review> reviews;
 
     // Getters and Setters
@@ -69,6 +77,8 @@ public class Restaurant {
 
     // Constructor, toString(), equals(), hashCode()
 
+
+
     public Restaurant(String id, String name, String address, String cuisine, List<String> menuItems, List<Review> reviews) {
         this.id = id;
         this.name = name;
@@ -76,6 +86,10 @@ public class Restaurant {
         this.cuisine = cuisine;
         this.menuItems = menuItems;
         this.reviews = reviews;
+    }
+
+    public Restaurant(){
+        super();
     }
 
     @Override

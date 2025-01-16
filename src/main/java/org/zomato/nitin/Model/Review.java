@@ -1,10 +1,15 @@
 package org.zomato.nitin.Model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 public class Review {
+    @JsonProperty("userId")
     private String userId;
+    @JsonProperty("rating")
     private String rating;
+    @JsonProperty("comment")
     private String comment;
 
     // Getters and Setters
@@ -41,14 +46,13 @@ public class Review {
         this.rating = rating;
         this.comment = comment;
     }
+    public Review(){
+        super();
+    }
 
     @Override
     public String toString() {
-        return "Review{" +
-                "userId='" + userId + '\'' +
-                ", rating='" + rating + '\'' +
-                ", comment='" + comment + '\'' +
-                '}';
+        return "Review{" + "userId='" + userId + '\'' + ", rating='" + rating + '\'' + ", comment='" + comment + '\'' + '}';
     }
 
     @Override
