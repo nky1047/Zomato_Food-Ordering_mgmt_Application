@@ -1,25 +1,36 @@
 package org.zomato.nitin.Model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Objects;
 
+@Document(collection = "reviews")
 public class Review {
-    @JsonProperty("userId")
-    private String userId;
+
+    @Id
+    @JsonProperty("reviewId")
+    private String reviewId;
     @JsonProperty("rating")
     private String rating;
     @JsonProperty("comment")
     private String comment;
+    @JsonProperty("orderID")
+    private String orderId;
+
+    public Review() {                       /// THIS IS IMPORTANT TO CREATE
+        super();
+    }
 
     // Getters and Setters
 
-    public String getUserId() {
-        return userId;
+    public String getReviewId() {
+        return reviewId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setReviewId(String reviewId) {
+        this.reviewId = reviewId;
     }
 
     public String getRating() {
@@ -38,21 +49,23 @@ public class Review {
         this.comment = comment;
     }
 
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
 
     // Constructor, toString(), equals(), hashCode()
 
-    public Review(String userId, String rating, String comment) {
-        this.userId = userId;
+
+    public Review(String reviewId, String rating, String comment, String orderId) {
+        this.reviewId = reviewId;
         this.rating = rating;
         this.comment = comment;
-    }
-    public Review(){
-        super();
-    }
-
-    @Override
-    public String toString() {
-        return "Review{" + "userId='" + userId + '\'' + ", rating='" + rating + '\'' + ", comment='" + comment + '\'' + '}';
+        this.orderId = orderId;
     }
 
     @Override
@@ -60,11 +73,11 @@ public class Review {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Review review = (Review) o;
-        return Objects.equals(userId, review.userId) && Objects.equals(rating, review.rating) && Objects.equals(comment, review.comment);
+        return Objects.equals(reviewId, review.reviewId) && Objects.equals(rating, review.rating) && Objects.equals(comment, review.comment) && Objects.equals(orderId, review.orderId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, rating, comment);
+        return Objects.hash(reviewId, rating, comment, orderId);
     }
 }

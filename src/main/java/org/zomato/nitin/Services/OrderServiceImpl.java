@@ -1,0 +1,72 @@
+package org.zomato.nitin.Services;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.zomato.nitin.Model.Customer;
+import org.zomato.nitin.Model.Order;
+import org.zomato.nitin.Model.Restaurant;
+import org.zomato.nitin.Repositories.CustomerRepository;
+import org.zomato.nitin.Repositories.OrderRepository;
+import org.zomato.nitin.Repositories.RestaurantRepository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.OptionalInt;
+
+@Service
+public class OrderServiceImpl {
+    @Autowired
+    private OrderRepository orderRepo;
+
+    @Autowired
+    private CustomerRepository custRepo;
+
+    @Autowired
+    private RestaurantRepository restaurantRepo;
+
+    private
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
+
+    public List<Order> getAllOrders() {
+        return orderRepo.findAll();
+    }
+
+    public List<Order> getOrdersByRestaurantId(String restaurantId) {
+        return orderRepo.findByRestaurantId(restaurantId);
+    }
+
+    public Order createOrderToRestaurant(Order order) {
+        try {
+            Optional<Restaurant> restaurantOptional = restaurantRepo.findById(order.getRestaurantId());
+
+            Optional<Customer> customerOptional = custRepo.findById(order.getCustomerId());
+            if (restaurantOptional.isPresent() && ) {
+                if (customerOptional.isPresent()) {
+                    for
+                    return orderRepo.save(order);
+                } else {
+                    throw new
+                            RuntimeException("Customer Details did'nt match given in Order!");
+                }
+            } else {
+                throw new RuntimeException("Restaurant Details did'nt match given in Order!");
+            }
+        } catch (Exception e) {
+            logger.error("Error in creating your Order!!");
+            throw new RuntimeException("An Exception Occured while creating Order!");
+        }
+    }
+
+    public void updateOrderStatus(Order order, String status) {
+        Optional<Order> orderOptional = orderRepo.findById(order.getOrderId());
+        if (orderOptional.isPresent()) {
+            order.setStatus(status);
+        } else {
+            throw new RuntimeException("Order not found!!");
+        }
+    }
+
+}

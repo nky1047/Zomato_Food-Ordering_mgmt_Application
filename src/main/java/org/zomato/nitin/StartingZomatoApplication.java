@@ -6,9 +6,9 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @SpringBootApplication
 @EnableMongoRepositories("org.zomato.nitin.Repositories") // Specify the package for your repositories
-public class Main {
+public class StartingZomatoApplication {
     public static void main(String[] args) {
-        System.out.println("Hello Zomato!");
-        SpringApplication.run(Main.class, args);
+        SpringApplication.run(StartingZomatoApplication.class, args);
+        System.out.println("\tZomato Application Started!");
     }
 }
