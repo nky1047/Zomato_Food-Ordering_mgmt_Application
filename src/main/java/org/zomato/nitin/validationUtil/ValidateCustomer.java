@@ -1,5 +1,5 @@
 package org.zomato.nitin.validationUtil;
 
-public class validateCustomer {
+public class ValidateCustomer {
     // TO BE IMPLEMENTED
 }

@@ -10,6 +10,7 @@ import org.zomato.nitin.Model.Restaurant;
 import org.zomato.nitin.Repositories.CustomerRepository;
 import org.zomato.nitin.Repositories.OrderRepository;
 import org.zomato.nitin.Repositories.RestaurantRepository;
+import org.zomato.nitin.validationUtil.ValidateOrderItems;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,9 +25,15 @@ public class OrderServiceImpl {
     private CustomerRepository custRepo;
 
     @Autowired
+    private CustomerServiceImpl customerService;
+
+    @Autowired
     private RestaurantRepository restaurantRepo;
 
-    private
+    @Autowired
+    private RestaurantService restaurantService;
+
+    private ValidateOrderItems validateOrderItems;
 
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
@@ -38,20 +45,24 @@ public class OrderServiceImpl {
         return orderRepo.findByRestaurantId(restaurantId);
     }
 
-    public Order createOrderToRestaurant(Order order) {
+    public void createOrderToRestaurant(Order order) {
         try {
             Optional<Restaurant> restaurantOptional = restaurantRepo.findById(order.getRestaurantId());
-
             Optional<Customer> customerOptional = custRepo.findById(order.getCustomerId());
-            if (restaurantOptional.isPresent() && ) {
+
+            if (restaurantOptional.isPresent() && validateOrderItems.compareMaps(restaurantOptional.get().getItemTable(),order.getOrderItems())) {
                 if (customerOptional.isPresent()) {
-                    for
-                    return orderRepo.save(order);
+                    Customer customer = customerOptional.get();
+
+                    orderRepo.save(order);
+                    customer.getMyOrdersList().add(order.getOrderId());
+                    customerService.updateCustomer(customer.getCustomerId(),customer);
                 } else {
-                    throw new
-                            RuntimeException("Customer Details did'nt match given in Order!");
+                    logger.info("Invalid Customer!");
+                    throw new RuntimeException("Customer Details did'nt match given in Order!");
                 }
             } else {
+                logger.info("Invalid Restaurant!");
                 throw new RuntimeException("Restaurant Details did'nt match given in Order!");
             }
         } catch (Exception e) {

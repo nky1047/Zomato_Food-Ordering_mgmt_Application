@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zomato.nitin.Model.Customer;
 import org.zomato.nitin.Repositories.CustomerRepository;
+import org.zomato.nitin.exceptions.RestaurantNotFoundExceptions;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CustomerServiceImpl {
@@ -21,12 +23,34 @@ public class CustomerServiceImpl {
         return custRepo.findAll();
     }
 
+    public Optional<Customer> getCustomerById(String customerId){
+        try{
+            return custRepo.findById(customerId);
+        }catch (Exception e){
+            logger.error("Error occurred in Service Class while fetching the Customer", e);
+            throw new RuntimeException("An error occurred while fetching the Customer", e);
+        }
+    }
     public Customer createNewCustomer(Customer customer){
         try{
             return custRepo.save(customer);
         }catch (Exception e){
             logger.error("Error occurred in Service Class while saving the Customer", e);
             throw new RuntimeException("An error occurred while saving the Customer", e);
+        }
+    }
+
+    public Customer updateCustomer(String customerId, Customer updatedCustomer){
+        try {
+            Optional<Customer> existingCustomer = custRepo.findById(customerId);
+            if (existingCustomer.isPresent()) {
+                Customer existingRestaurant = updatedCustomer;
+                return custRepo.save(existingRestaurant);
+            } else {
+                throw new RestaurantNotFoundExceptions("Customer with id: " + customerId + "NOT FOUND !");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while updating the Customer!", e);
         }
     }
 

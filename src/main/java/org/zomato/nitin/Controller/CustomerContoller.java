@@ -11,6 +11,7 @@ import org.zomato.nitin.Repositories.CustomerRepository;
 import org.zomato.nitin.Services.CustomerServiceImpl;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/customer")
@@ -21,6 +22,12 @@ public class CustomerContoller {
     @GetMapping
     public ResponseEntity<List<Customer>> getAllCustomers() {
         return ResponseEntity.ok(custService.getAllCustomers());
+    }
+
+    @GetMapping("/{customerId}")
+    public ResponseEntity<Customer> getCustomerById(@PathVariable String customerId){
+        Optional<Customer> customerOptional = custService.getCustomerById(customerId);
+        return customerOptional.map(ResponseEntity::ok).orElseGet(()-> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/new")

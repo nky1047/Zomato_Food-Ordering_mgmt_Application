@@ -8,6 +8,7 @@ import org.zomato.nitin.Model.Restaurant;
 import org.zomato.nitin.Repositories.RestaurantRepository;
 import org.zomato.nitin.exceptions.RestaurantNotFoundExceptions;
 
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +35,21 @@ public class RestaurantService {
         } catch (Exception e) {
             logger.error("Error occurred in Service Class while saving the restaurant", e);
             throw new RuntimeException("An error occurred while saving the restaurant", e);
+        }
+    }
+
+    public Hashtable<String,String> getOrderItemsByRestaurantId(String restaurantId){
+        try{
+            Optional<Restaurant> existingRestaurant = restaurantRepository.findById(restaurantId);
+            if(existingRestaurant.isPresent()){
+                Restaurant restaurant = existingRestaurant.get();
+                Hashtable<String,String> menu = restaurant.getItemTable();
+                return menu;
+            }else {
+                throw new RestaurantNotFoundExceptions("Restaurant with id: " + restaurantId + "NOT FOUND !");
+            }
+        }catch (Exception e){
+            throw new RuntimeException("An Internal Error occurred!", e);
         }
     }
 

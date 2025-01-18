@@ -35,12 +35,13 @@ public class OrderController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<Order> newOrder(@RequestBody Order order){
+    public Order newOrder(@RequestBody Order order){
         try{
-            return new ResponseEntity<>(orderService.createOrderToRestaurant(order), HttpStatus.CREATED);
+            orderService.createOrderToRestaurant(order);
         }catch (Exception e){
             logger.error("Error occurred while creating the Order in Controller", e);
             throw new RuntimeException("An error occurred while creating the Order in Controller", e);
         }
+        return order;
     }
 }

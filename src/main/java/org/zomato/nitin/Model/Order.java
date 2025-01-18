@@ -16,10 +16,10 @@ public class Order {
     private String customerId;
     @JsonProperty("restaurantId")
     private String restaurantId;
-    @JsonProperty("oderItems")
-    Hashtable<Integer, String> oderItems;
+    @JsonProperty("orderItems")
+    Hashtable<String, String> orderItems;
     @JsonProperty("orderValue")
-    private String oderValue;
+    private String orderValue;
     @JsonProperty("rating")
     private String rating;
     @JsonProperty("status")
@@ -51,20 +51,20 @@ public class Order {
         this.restaurantId = restaurantId;
     }
 
-    public Hashtable<Integer, String> getOderItems() {
-        return oderItems;
+    public Hashtable<String, String> getOrderItems() {
+        return orderItems;
     }
 
-    public void setOderItems(Hashtable<Integer, String> oderItems) {
-        this.oderItems = oderItems;
+    public void setOderItems(Hashtable<String, String> orderItems) {
+        this.orderItems = orderItems;
     }
 
-    public String getOderValue() {
-        return oderValue;
+    public String getOrderValue() {
+        return orderValue;
     }
 
-    public void setOderValue(String oderValue) {
-        this.oderValue = oderValue;
+    public void setOderValue(String orderValue) {
+        this.orderValue = orderValue;
     }
 
     public String getRating() {
@@ -87,12 +87,12 @@ public class Order {
     // Constructor, toString(), equals(), hashCode()
 
 
-    public Order(String orderId, String customerId, String restaurantId, Hashtable<Integer, String> oderItems, String oderValue, String rating, String status) {
+    public Order(String orderId, String customerId, String restaurantId, Hashtable<String, String> orderItems, String orderValue, String rating, String status) {
         this.orderId = orderId;
         this.customerId = customerId;
         this.restaurantId = restaurantId;
-        this.oderItems = oderItems;
-        this.oderValue = oderValue;
+        this.orderItems = orderItems;
+        this.orderValue = orderValue;
         this.rating = rating;
         this.status = status;
     }
@@ -102,11 +102,11 @@ public class Order {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return Objects.equals(orderId, order.orderId) && Objects.equals(customerId, order.customerId) && Objects.equals(restaurantId, order.restaurantId) && Objects.equals(oderItems, order.oderItems) && Objects.equals(oderValue, order.oderValue) && Objects.equals(rating, order.rating) && Objects.equals(status, order.status);
+        return Objects.equals(orderId, order.orderId) && Objects.equals(customerId, order.customerId) && Objects.equals(restaurantId, order.restaurantId) && Objects.equals(orderItems, order.orderItems) && Objects.equals(orderValue, order.orderValue) && Objects.equals(rating, order.rating) && Objects.equals(status, order.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderId, customerId, restaurantId, oderItems, oderValue, rating, status);
+        return Objects.hash(orderId, customerId, restaurantId, orderItems, orderValue, rating, status);
     }
 }
