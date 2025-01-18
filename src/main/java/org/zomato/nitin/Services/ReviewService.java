@@ -53,7 +53,7 @@ public class ReviewService {
         return reviewRepo.save(review);
     }
 
-    public void deleteReview(final String reviewerId) {
-        reviewRepo.deleteById(reviewerId);
+    public void deleteReview(final String reviewId) {
+        reviewRepo.deleteById(reviewId);
     }
 }
