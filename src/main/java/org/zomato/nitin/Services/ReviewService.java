@@ -1,15 +1,20 @@
 package org.zomato.nitin.Services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zomato.nitin.Model.Customer;
+import org.zomato.nitin.Model.Order;
 import org.zomato.nitin.Model.Restaurant;
 import org.zomato.nitin.Model.Review;
+import org.zomato.nitin.Repositories.OrderRepository;
 import org.zomato.nitin.Repositories.RestaurantRepository;
 import org.zomato.nitin.Repositories.ReviewsRepository;
 
 import java.util.List;
 import java.util.Optional;
+
 
 @Service
 public class ReviewService {
@@ -19,40 +24,41 @@ public class ReviewService {
     @Autowired
     private RestaurantRepository restaurantRepo;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private OrderServiceImpl orderService;
+
+    public static final Logger logger = LoggerFactory.getLogger(ReviewService.class);
+//    GET ALL REVIEWS
     public List<Review> getAllReviews() {
         return reviewRepo.findAll();
     }
-
-    public Optional<Review> getReviewByreviewerId(String reviewerId) {
-        return reviewRepo.findById(reviewerId);
+//    GET REVIEW BY ID
+    public Optional<Review> getReviewById(String reviewId) {
+        return reviewRepo.findById(reviewId);
     }
-
-   /* public List<Review> getReviewsByRestaurantId(String restaurantId) {
-        return reviewRepo.findByRestaurantId(restaurantId);
-    }*/
-
-    public Review createNewReview(Review review){
+//    NEW REVIEW FOR ORDER
+    public void createNewReview(Review review){
         try{
-            return reviewRepo.save(review);
+            Optional<Order> orderOptional= orderRepository.findById(review.getOrderId());
+            if(orderOptional.isPresent()){
+                reviewRepo.save(review);
+                Order latestOrder = orderOptional.get();
+                latestOrder.setRating(review.getRating());
+                orderService.updateOrderStatus(latestOrder,"COMPLETED");
+            }
         }catch (Exception e){
-//            logger.error("Error occurred in Service Class while saving the Customer", e);
+            logger.error("Error occurred in Service Class while saving the Customer", e);
             throw new RuntimeException("An error occurred while saving the Customer", e);
         }
     }
-    /*public void addReviewtoRestaurant(String restaurantId, Review review) {
-        Optional<Restaurant> restaurantOpt = restaurantRepo.findById(restaurantId);
-        if (restaurantOpt.isPresent()) {
-            review.(restaurantId);
-            reviewRepo.save(review);                            //// Save the review with the linked restaurantID
-        } else {
-            throw new RuntimeException("Restaurant not found");
-        }
-    }*/
-
+//    UPDATE REVIEW
     public Review updateReview(String reviewerId, String comment, String rating, Review review) {
         return reviewRepo.save(review);
     }
-
+//    DELETE REVIEW
     public void deleteReview(final String reviewId) {
         reviewRepo.deleteById(reviewId);
     }

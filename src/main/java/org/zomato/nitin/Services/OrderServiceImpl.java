@@ -53,7 +53,7 @@ public class OrderServiceImpl {
             if (restaurantOptional.isPresent() && validateOrderItems.compareMaps(restaurantOptional.get().getItemTable(),order.getOrderItems())) {
                 if (customerOptional.isPresent()) {
                     Customer customer = customerOptional.get();
-
+                    order.setStatus("PREPARING");
                     orderRepo.save(order);
                     customer.getMyOrdersList().add(order.getOrderId());
                     customerService.updateCustomer(customer.getCustomerId(),customer);
@@ -71,10 +71,13 @@ public class OrderServiceImpl {
         }
     }
 
-    public void updateOrderStatus(Order order, String status) {
-        Optional<Order> orderOptional = orderRepo.findById(order.getOrderId());
+    public void updateOrderStatus(Order updatedOrder, String status) {
+        Optional<Order> orderOptional = orderRepo.findById(updatedOrder.getOrderId());
         if (orderOptional.isPresent()) {
-            order.setStatus(status);
+            Order latestOrder = updatedOrder;
+            latestOrder.setStatus(status);
+            latestOrder.setRating(updatedOrder.getRating());
+            orderRepo.save(latestOrder);
         } else {
             throw new RuntimeException("Order not found!!");
         }
