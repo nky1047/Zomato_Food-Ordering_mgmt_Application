@@ -1,4 +1,4 @@
-package org.zomato.nitin.exceptions;
+package org.zomato.nitin.Exceptions;
 
 public class ReveiwsNotFoundException {
 }

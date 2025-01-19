@@ -1,7 +1,10 @@
 package org.zomato.nitin.Model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mongodb.lang.NonNull;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.IndexOptions;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Hashtable;
@@ -11,10 +14,13 @@ import java.util.Objects;
 @Document(collection = "customer")
 public class Customer {
     @Id
+    @Indexed(unique = true)
     @JsonProperty("customerId")
     private String customerId;
+    @NonNull()
     @JsonProperty("customerName")
     private String customerName;
+    @NonNull
     @JsonProperty("customerAddress")
     private String customerAddress;
     @JsonProperty("customerPhone")

@@ -1,7 +1,9 @@
 package org.zomato.nitin.Model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mongodb.lang.NonNull;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Objects;
@@ -10,12 +12,15 @@ import java.util.Objects;
 public class Review {
 
     @Id
+    @Indexed(unique = true)
     @JsonProperty("reviewId")
     private String reviewId;
+    @NonNull
     @JsonProperty("rating")
     private String rating;
     @JsonProperty("comment")
     private String comment;
+    @NonNull
     @JsonProperty("orderID")
     private String orderId;
 
