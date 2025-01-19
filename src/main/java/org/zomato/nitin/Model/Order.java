@@ -32,6 +32,10 @@ public class Order {
     @JsonProperty("status")
     private String status;
 
+    private Order(){
+        super();
+    }
+
     // Getters and Setters
 
     public String getOrderId() {
