@@ -1,5 +1,6 @@
 package org.zomato.nitin.Controller;
 
+import org.apache.kafka.common.protocol.types.Field;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class RestaurantController {
         return restaurant.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/new")
     public ResponseEntity<Restaurant> createRestaurant(@RequestBody Restaurant restaurant) {
         try {
             return new ResponseEntity<>(restaurantService.createRestaurant(restaurant), HttpStatus.CREATED);
@@ -53,17 +54,21 @@ public class RestaurantController {
         }
     }
 
-    @PutMapping("/{id}")
-    public Restaurant updateRestaurant(@PathVariable String rstId, @RequestBody Restaurant restaurant) {
-        return restaurantService.updateRestaurant(rstId, restaurant);
+    @PutMapping("/update")
+    public Restaurant updateRestaurant(@RequestBody Restaurant restaurant) {
+        return restaurantService.updateRestaurant(restaurant);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRestaurant(@PathVariable final String id) {
-        restaurantService.deleteRestaurant(id);
+   /* @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteRestaurant(@RequestBody Restaurant restaurant) {
+        restaurantService.deleteRestaurant(restaurant);
         return ResponseEntity.noContent().build();
-    }
+    }*/
 
-    // Methods for handling reviews (add, update, delete)
+    @RequestMapping(value = "/delete/{id}")
+    public String deleteRestaurant(@PathVariable(name = "id") String id) {
+        restaurantService.deleteRestaurant(id);
+        return "redirect:/";
+    }
 
 }

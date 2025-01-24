@@ -45,6 +45,10 @@ public class OrderServiceImpl {
         return orderRepo.findByRestaurantId(restaurantId);
     }
 
+    public Optional<Order> getOrderById(String orderId){
+        return orderRepo.findById(orderId);
+    }
+
     public void createOrderToRestaurant(Order order) {
         try {
             Optional<Restaurant> restaurantOptional = restaurantRepo.findById(order.getRestaurantId());

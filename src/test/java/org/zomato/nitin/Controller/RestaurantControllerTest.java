@@ -15,6 +15,7 @@ import org.zomato.nitin.Repositories.RestaurantRepository;
 import org.zomato.nitin.Repositories.ReviewsRepository;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
 
@@ -55,14 +56,14 @@ class RestaurantControllerTest {
     void createRestaurant() throws Exception {
         Restaurant restaurant1 = new Restaurant();
         restaurant1.setRestaurantName("Hotel1");
-        restaurant1.setAddress("Lucknow");
+        restaurant1.setLocation("Lucknow");
         restaurant1.setRestaurantid("f3g3t34t3");
-        restaurant1.setCuisine("North-Indian");
+        restaurant1.setCuisineType("North-Indian");
         List<String> menuItems = new ArrayList<>();
         menuItems.add("Kofta");
         menuItems.add("Paneer");
         menuItems.add("Biryani");
-        restaurant1.setMenuItems(menuItems);
+        restaurant1.setItemTable((Hashtable<String, String>) menuItems);
 //        Review review1 = new Review("123", "4.5", "Excellent");
 //        Review review2 = new Review("124", "4.5", "Excellent");
 //        Review review3 = new Review("123", "4.5", "Excellent");

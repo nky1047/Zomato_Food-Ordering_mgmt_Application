@@ -3,15 +3,13 @@ package org.zomato.nitin.Controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.aggregation.BooleanOperators;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.zomato.nitin.Model.Order;
-import org.zomato.nitin.Model.Restaurant;
 import org.zomato.nitin.Services.OrderServiceImpl;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/order")
@@ -21,12 +19,17 @@ public class OrderController {
     @Autowired
     private OrderServiceImpl orderService;
 
-
     @GetMapping
     public ResponseEntity<List<Order>> getAllOrders(){
         return ResponseEntity.ok(
                 orderService.getAllOrders()
         );
+    }
+
+    @GetMapping("/status/{orderId}")
+    public Order getOrderById(@PathVariable String orderId){
+        Optional<Order> orderOptional = orderService.getOrderById(orderId);
+        return orderOptional.get();
     }
 
     @GetMapping("/{restaurantId}")

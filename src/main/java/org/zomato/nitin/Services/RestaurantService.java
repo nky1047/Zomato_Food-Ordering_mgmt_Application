@@ -35,8 +35,8 @@ public class RestaurantService {
     public Restaurant createRestaurant(Restaurant restaurant) {
         try {
             //return restaurantRepository.save(restaurant);
-            if ((restaurantRepository.existsById(restaurant.getRestaurantid()))) {
-                throw new RestaurantExceptions("Error creating new Restaurant, Restaurant Already Exists!");
+            if (restaurant.getRestaurantid() != null && restaurantRepository.existsById(restaurant.getRestaurantid())){
+                    throw new RestaurantExceptions("Error creating new Restaurant, Restaurant Already Exists!");
             } else {
                 logger.warn("Restaurant Created!!");
                 return restaurantRepository.save(restaurant);
@@ -63,22 +63,27 @@ public class RestaurantService {
     }
 
 
-    public Restaurant updateRestaurant(String restId, Restaurant updatedRestaurant) {
+    public Restaurant updateRestaurant(Restaurant updatedRestaurant) {
         try {
-            Optional<Restaurant> existingRestaurantOpt = restaurantRepository.findById(restId);
-            if (existingRestaurantOpt.isPresent()) {
-                Restaurant existingRestaurant = existingRestaurantOpt.get();
-                return restaurantRepository.save(existingRestaurant);
+            Optional<Restaurant> RestaurantOpt = restaurantRepository.findById(updatedRestaurant.getRestaurantid());
+            if (RestaurantOpt.isPresent()) {
+                Restaurant newRestaurant = RestaurantOpt.get();
+                newRestaurant.setRestaurantName(updatedRestaurant.getRestaurantName());
+                newRestaurant.setLocation(updatedRestaurant.getLocation());
+                newRestaurant.setItemTable(updatedRestaurant.getItemTable());
+                newRestaurant.setCuisineType(updatedRestaurant.getCuisineType());
+                return restaurantRepository.save(newRestaurant);
             } else {
-                throw new RestaurantExceptions("Restaurant with id: " + restId + "NOT FOUND !");
+                logger.error("Restaurant with id: " + updatedRestaurant.getRestaurantid() + "NOT FOUND !");
+                throw new RestaurantExceptions("Restaurant with id: " + updatedRestaurant.getRestaurantid() + "NOT FOUND !");
             }
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while updating the restaurant", e);
         }
     }
 
-    public void deleteRestaurant(final String id) {
-        restaurantRepository.deleteById(id);
+    public void deleteRestaurant(String restaurantId) {
+        restaurantRepository.deleteById(restaurantId);
     }
 
 }
