@@ -8,7 +8,7 @@ import org.zomato.nitin.Exceptions.CustomerException;
 import org.zomato.nitin.Model.Customer;
 import org.zomato.nitin.Repositories.CustomerRepository;
 import org.zomato.nitin.Exceptions.RestaurantExceptions;
-import org.zomato.nitin.kafka.KafkaProducerService;
+import org.zomato.nitin.kafka.KafkaProducerService_PlaceOrder;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,13 +22,13 @@ public class CustomerServiceImpl {
     private CustomerServiceImpl customerService;*/              //CANNOT USE SERVICE CLASS here as Circular Dependency Prohibited
 
     @Autowired
-    private KafkaProducerService kafkaProducerService;
+    private KafkaProducerService_PlaceOrder kafkaProducerServicePlaceOrder;
 
     //TO BE DONE
     private static final Logger logger = LoggerFactory.getLogger(CustomerServiceImpl.class);
 
     public List<Customer> getAllCustomers() {
-        kafkaProducerService.sendCustomerMessage("All Customers List Fetched!!");
+        //kafkaProducerServicePlaceOrder.sendCustomerMessage("All Customers List Fetched!!");
         return custRepo.findAll();
     }
 
@@ -48,7 +48,7 @@ public class CustomerServiceImpl {
             if (custRepo.existsById(customer.getCustomerId())) {
                 throw new CustomerException("Error creating new Customer, Customer Already Exists!");
             } else {
-                kafkaProducerService.sendCustomerMessage("New customer created with Id:"+customer.getCustomerId());
+              //  kafkaProducerServicePlaceOrder.sendCustomerMessage("New customer created with Id:"+customer.getCustomerId());
                 return custRepo.save(customer);
             }
         } catch (Exception e) {

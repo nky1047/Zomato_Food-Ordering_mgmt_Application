@@ -3,6 +3,9 @@ package org.zomato.nitin.Services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.zomato.nitin.Model.Customer;
 import org.zomato.nitin.Model.Order;
@@ -37,6 +40,17 @@ public class OrderServiceImpl {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
+
+    // KAFKA PRODUCER LOGIC FOR PLACING ORDER
+
+
+    private final KafkaTemplate<String, Order> kafkaTemplate;
+    //@Value("${kafka.topic.order}")
+    private String orderTopic ="kafka_topic_orders";
+    public OrderServiceImpl(KafkaTemplate<String, Order> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
+
     public List<Order> getAllOrders() {
         return orderRepo.findAll();
     }
@@ -59,8 +73,10 @@ public class OrderServiceImpl {
                     Customer customer = customerOptional.get();
                     order.setStatus("PREPARING");
                     orderRepo.save(order);
+//                  kafkaTemplate.send(orderTopic, order.getOrderId(),order);       //// Send to Kafka Topic - Order with orderId as key
                     customer.getMyOrdersList().add(order.getOrderId());
                     customerService.updateCustomer(customer.getCustomerId(),customer);
+
                 } else {
                     logger.info("Invalid Customer!");
                     throw new RuntimeException("Customer Details did'nt match given in Order!");
@@ -75,13 +91,16 @@ public class OrderServiceImpl {
         }
     }
 
+   // @KafkaListener(topics = "kafka_topic_orders" , groupId = "order_group")
     public void updateOrderStatus(Order updatedOrder, String status) {
         Optional<Order> orderOptional = orderRepo.findById(updatedOrder.getOrderId());
         if (orderOptional.isPresent()) {
+            logger.info("Updated Order received: {}", updatedOrder);
             Order latestOrder = updatedOrder;
             latestOrder.setStatus(status);
             latestOrder.setRating(updatedOrder.getRating());
             orderRepo.save(latestOrder);
+            logger.info("Processing Order : ....", latestOrder.getOrderId());
         } else {
             throw new RuntimeException("Order not found!!");
         }

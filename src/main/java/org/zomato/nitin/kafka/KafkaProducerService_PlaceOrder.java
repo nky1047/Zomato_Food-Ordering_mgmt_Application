@@ -5,13 +5,13 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class KafkaProducerService {
+public class KafkaProducerService_PlaceOrder {
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Value("${kafka.topic.customer}")
     private String customerTopic;
 
-    public KafkaProducerService(KafkaTemplate<String,String> kafkaTemplate){
+    public KafkaProducerService_PlaceOrder(KafkaTemplate<String,String> kafkaTemplate){
         this.kafkaTemplate=kafkaTemplate;
     }
 
