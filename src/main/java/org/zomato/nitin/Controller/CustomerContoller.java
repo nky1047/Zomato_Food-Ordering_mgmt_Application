@@ -37,14 +37,6 @@ public class CustomerContoller {
 
     @PostMapping("/new")
     public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
-
         return new ResponseEntity<>(custService.createNewCustomer(customer), HttpStatus.CREATED);
-
-        /*try {
-            return new ResponseEntity<>(custService.createNewCustomer(customer), HttpStatus.CREATED);
-        } catch (Exception e) {
-            logger.error("Error occurred while creating the Customer in Controller", e);
-            throw new RuntimeException("An error occurred while creating the Customer in Controller", e);
-        }*/
     }
 }
