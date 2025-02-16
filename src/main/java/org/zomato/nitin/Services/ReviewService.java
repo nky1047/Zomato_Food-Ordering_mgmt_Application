@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.zomato.nitin.Exceptions.ReveiwsException;
 import org.zomato.nitin.Model.Customer;
 import org.zomato.nitin.Model.Order;
 import org.zomato.nitin.Model.Restaurant;
@@ -47,11 +48,13 @@ public class ReviewService {
                 reviewRepo.save(review);
                 Order latestOrder = orderOptional.get();
                 latestOrder.setRating(review.getRating());
-                orderService.updateOrderStatus(latestOrder,"COMPLETED");
+                latestOrder.setStatus("COMPLETED");
+                orderService.updateOrderStatus(latestOrder);
+                logger.info("Rating :"+latestOrder.getRating()+": given for Order ID:{}",latestOrder.getOrderId());
             }
-        }catch (Exception e){
-            logger.error("Error occurred in Service Class while saving the Customer", e);
-            throw new RuntimeException("An error occurred while saving the Customer", e);
+        }catch (ReveiwsException e){
+            logger.error("Error occurred in Service Class while saving Review::", e);
+            throw new ReveiwsException("An error occurred while saving the Review::"+review);
         }
     }
 //    UPDATE REVIEW

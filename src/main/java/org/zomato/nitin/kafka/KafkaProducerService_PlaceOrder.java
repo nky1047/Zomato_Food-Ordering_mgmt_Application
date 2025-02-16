@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class KafkaProducerService_PlaceOrder {
+
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Value("${kafka.topic.customer}")
@@ -17,6 +18,7 @@ public class KafkaProducerService_PlaceOrder {
 
 
     public void sendCustomerMessage(String message) {
+
         kafkaTemplate.send(customerTopic, message);
     }
 

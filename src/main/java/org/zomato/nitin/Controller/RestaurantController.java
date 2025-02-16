@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.zomato.nitin.Exceptions.RestaurantExceptions;
 import org.zomato.nitin.Model.Restaurant;
 import org.zomato.nitin.Repositories.RestaurantRepository;
 import org.zomato.nitin.Services.RestaurantService;
@@ -50,7 +51,7 @@ public class RestaurantController {
             return new ResponseEntity<>(restaurantService.createRestaurant(restaurant), HttpStatus.CREATED);
         } catch (Exception e) {
             logger.error("Error occurred while creating the restaurant", e);
-            throw new RuntimeException("An error occurred while creating the restaurant", e);
+            throw new RestaurantExceptions("An error occurred while creating the restaurant"+restaurant.toString());
         }
     }
 

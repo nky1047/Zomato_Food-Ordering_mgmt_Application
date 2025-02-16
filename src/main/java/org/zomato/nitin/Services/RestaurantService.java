@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.zomato.nitin.Exceptions.PlaceOrderException;
+import org.zomato.nitin.Model.Customer;
 import org.zomato.nitin.Model.Restaurant;
 import org.zomato.nitin.Repositories.RestaurantRepository;
 import org.zomato.nitin.Exceptions.RestaurantExceptions;
@@ -33,18 +35,26 @@ public class RestaurantService {
     }
 
     public Restaurant createRestaurant(Restaurant restaurant) {
+        //return restaurantRepository.save(restaurant);
+        if (restaurantRepository.existsById(restaurant.getRestaurantName())) {
+            logger.info("Duplicate Restaurant Request!");
+            throw new PlaceOrderException("Restaurant with ID: "+ restaurant.getRestaurantid()+"and Name: "+restaurant.getRestaurantName()+" Already Present!");
+        }
+        //-------
         try {
-            //return restaurantRepository.save(restaurant);
-            if (restaurant.getRestaurantid() != null && restaurantRepository.existsById(restaurant.getRestaurantid())){
-                    throw new RestaurantExceptions("Error creating new Restaurant, Restaurant Already Exists!");
-            } else {
+            if (restaurant.getRestaurantid() != null
+                    && restaurant.getRestaurantName() != null
+                    && restaurant.getLocation() != null
+                    && restaurant.getCuisineType() != null
+            ) {
                 logger.warn("Restaurant Created!!");
-                return restaurantRepository.save(restaurant);
+//                      kafkaTemplate.send(orderTopic, order.getOrderId(),order);       //// Send to Kafka Topic - Order with orderId as key
             }
         } catch (Exception e) {
             logger.error("Error occurred in Service Class while saving the restaurant", e);
-            throw new RuntimeException("An error occurred while saving the restaurant", e);
+            throw new RestaurantExceptions("An error occurred while saving the restaurant");
         }
+        return restaurantRepository.save(restaurant);
     }
 
     public Hashtable<String, String> getOrderItemsByRestaurantId(String restaurantId) {
