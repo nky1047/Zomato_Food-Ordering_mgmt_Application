@@ -1,6 +1,5 @@
 package org.zomato.nitin.Services;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +7,6 @@ import org.springframework.stereotype.Service;
 import org.zomato.nitin.Exceptions.CustomerException;
 import org.zomato.nitin.Model.Customer;
 import org.zomato.nitin.Repositories.CustomerRepository;
-import org.zomato.nitin.Exceptions.RestaurantExceptions;
-import org.zomato.nitin.kafka.KafkaProducerService_PlaceOrder;
 
 import java.util.List;
 import java.util.Optional;

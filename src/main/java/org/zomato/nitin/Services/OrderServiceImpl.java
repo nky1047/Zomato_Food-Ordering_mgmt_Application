@@ -3,14 +3,8 @@ package org.zomato.nitin.Services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.ErrorResponse;
-import org.zomato.nitin.Exceptions.CustomerException;
 import org.zomato.nitin.Exceptions.PlaceOrderException;
 import org.zomato.nitin.Model.Customer;
 import org.zomato.nitin.Model.Order;
@@ -18,13 +12,14 @@ import org.zomato.nitin.Model.Restaurant;
 import org.zomato.nitin.Repositories.CustomerRepository;
 import org.zomato.nitin.Repositories.OrderRepository;
 import org.zomato.nitin.Repositories.RestaurantRepository;
+import org.zomato.nitin.kafka.KafkaOrderProducer;
+import org.zomato.nitin.kafka.KafkaProducerService;
 import org.zomato.nitin.validationUtil.ValidateOrderItems;
 
 import java.util.*;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static org.apache.logging.log4j.util.StringBuilders.equalsIgnoreCase;
 
 @Service
 public class OrderServiceImpl {
@@ -43,6 +38,12 @@ public class OrderServiceImpl {
     @Autowired
     private RestaurantService restaurantService;
 
+    @Autowired
+    private KafkaProducerService kafkaProducerService;              //AutoWired Producer Class
+
+    @Autowired
+    private KafkaOrderProducer kafkaOrderProducer;                  //AutoWired Producer Class
+
     private ValidateOrderItems validateOrderItems;
 
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
@@ -51,17 +52,8 @@ public class OrderServiceImpl {
     // KAFKA PRODUCER LOGIC FOR PLACING ORDER
 
 
-    private final KafkaTemplate<String, Order> kafkaTemplate;
-    //@Value("${kafka.topic.order}")
-    private final String orderTopic = "kafka_topic_orders";
-
-
-    public OrderServiceImpl(KafkaTemplate<String, Order> kafkaTemplate) {
-        this.kafkaTemplate = kafkaTemplate;
-    }
-
-
     public List<Order> getAllOrders() {
+        kafkaProducerService.sendMessage("ORDERS LIST FETCHED!");
         return orderRepo.findAll();
     }
 
@@ -70,6 +62,7 @@ public class OrderServiceImpl {
     }
 
     public Optional<Order> getOrderById(String orderId) {
+        kafkaProducerService.sendMessage("getOrderById used for Order ID:"+orderId);
         return orderRepo.findById(orderId);
     }
 
@@ -77,6 +70,7 @@ public class OrderServiceImpl {
 
         Optional<Restaurant> restaurantWithCurrentOrder = restaurantRepo.findById(order.getRestaurantId());
         Optional<Customer> customerWithCurrentOrder = custRepo.findById(order.getCustomerId());
+
 
         if (!customerWithCurrentOrder.isPresent()) {
             logger.info("Invalid Customer!");
@@ -95,11 +89,9 @@ public class OrderServiceImpl {
                 String tempCustistOrderId = currentCustomerOrderList.get(i);
                 if (tempCustistOrderId != null) {
                     Order tempOrder = getOrderById(tempCustistOrderId).get();
-                    if (tempOrder.getStatus().equals("PREPARING")
-                            && tempOrder.getRestaurantId().equals(order.getRestaurantId()))
+                    if (tempOrder.getStatus().equals("PREPARING") && tempOrder.getRestaurantId().equals(order.getRestaurantId()))
                         isduplicateOrderByCustomerforRestaurant = TRUE;
-                }else
-                    isduplicateOrderByCustomerforRestaurant = FALSE;
+                } else isduplicateOrderByCustomerforRestaurant = FALSE;
             }
         }
         if (isduplicateOrderByCustomerforRestaurant) {
@@ -121,16 +113,18 @@ public class OrderServiceImpl {
                 order.setStatus("PREPARING");
                 savedOrder = orderRepo.save(order);
                 logger.info("Order Created with ID:" + order.getOrderId());
+                // KAFKA - MESSAGE SENT TO TOPIC
+                kafkaProducerService.sendMessage("KAFKA:ORDER Created with ID: " + order.getOrderId());
+                // KAFKA - ORDER SENT TO TOPIC
+                kafkaOrderProducer.sendOrder(order);
 
                 // Null Check for New Customer with null OrderList
                 if (customer.getMyOrdersList() == null) {
                     customer.setMyOrdersList(Collections.singletonList(order.getOrderId()));
-                logger.info("First Order of Customer :{}", customer.getCustomerName());
+                    logger.info("First Order of Customer :{}", customer.getCustomerName());
                 } else {
                     customer.getMyOrdersList().add(order.getOrderId());
                 }
-
-//              kafkaTemplate.send(orderTopic, order.getOrderId(),order);       //// Send to Kafka Topic - Order with orderId as key
                 customerService.updateCustomer(customer.getCustomerId(), customer);
             }
         } catch (Exception e) {
@@ -145,7 +139,6 @@ public class OrderServiceImpl {
     public Order updateOrderStatus(Order updatedOrder) {
         Optional<Order> orderOptional = orderRepo.findById(updatedOrder.getOrderId());
         Optional<Restaurant> restaurantWithCurrentOrder = restaurantRepo.findById(updatedOrder.getRestaurantId());
-
         if (!ValidateOrderItems.compareMaps(restaurantWithCurrentOrder.get().getItemTable(), updatedOrder.getOrderItems())) {
             logger.info("Invalid Menu Items!");
             throw new PlaceOrderException("Ordered Menu Items not available!");
@@ -160,10 +153,11 @@ public class OrderServiceImpl {
             //latestOrder.setRating(null);
             logger.info("Processing.. Order with ID: {}", latestOrder.getOrderId());
             orderRepo.save(latestOrder);
+            // KAFKA - Message Sent to Topic
+            kafkaProducerService.sendMessage("Updated the Order with ID: " + latestOrder.getOrderId());
             return latestOrder;
         } else {
             throw new PlaceOrderException("Cannot Update Order!!");
         }
     }
-
 }
