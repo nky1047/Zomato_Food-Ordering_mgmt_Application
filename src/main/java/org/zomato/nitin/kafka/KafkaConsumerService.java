@@ -14,8 +14,8 @@ public class KafkaConsumerService {
     }
 
 
-//    @KafkaListener(topics = "zomato.orders", groupId = "order_group_id")
-//    public void consumerOrder(Order order){
-//        System.out.println("Order Received from Kafka: " + order.getOrderId() );
-//    }
+    @KafkaListener(topics = "zomato.orders", groupId = "order_group_id")
+    public void consumerOrder(Order order){
+        System.out.println("Order Received from Kafka: " + order.getOrderId() );
+    }
 }
