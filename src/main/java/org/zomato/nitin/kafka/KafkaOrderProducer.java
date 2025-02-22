@@ -16,11 +16,11 @@ public class KafkaOrderProducer {
     @Autowired
     private KafkaTemplate<String, Order> kafkaTemplate;
 
-    private Logger logger = LoggerFactory.getLogger(org.zomato.nitin.kafka.KafkaProducerService.class);
+    private Logger logger = LoggerFactory.getLogger(KafkaOrderProducer.class);
 
     public void sendOrder(Order order) {
         this.kafkaTemplate.send(TOPIC, order);
-        logger.info("Kafka Order Produced!");
+        logger.info("Kafka :: Order Produced!");
     }
 
     @Bean

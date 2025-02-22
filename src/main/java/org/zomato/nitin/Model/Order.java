@@ -98,6 +98,19 @@ public class Order {
     // Constructor, toString(), equals(), hashCode()
 
 
+    @Override
+    public String toString() {
+        return "Order{" +
+                "orderId='" + orderId + '\'' +
+                ", customerId='" + customerId + '\'' +
+                ", restaurantId='" + restaurantId + '\'' +
+                ", orderItems=" + orderItems +
+                ", orderValue='" + orderValue + '\'' +
+                ", rating='" + rating + '\'' +
+                ", status='" + status + '\'' +
+                '}';
+    }
+
     public Order(String orderId, String customerId, String restaurantId, Hashtable<String, String> orderItems, String orderValue, String rating, String status) {
         this.orderId = orderId;
         this.customerId = customerId;

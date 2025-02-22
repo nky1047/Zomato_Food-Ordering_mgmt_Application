@@ -22,6 +22,13 @@ FLOW :
 5. Restaurant/USER can Update Order Status - "Processing" [NEED MORE VALIDATION ]
 6. User add Review for Particular Order ID,which Updates Order Status - "COMPLETED"  [MORE VALIDATIONS TO BE ADDED]
 
+Starting MongoDB in Docker
+Commands:
+* docker pull mongodb/mongodb-community-server:latest
+* docker run --name mongodb -p 27017:27017 -d mongodb/mongodb-community-server:latest
+
+For Running the Kafka:
+* run the docker-compose.yml File by going into the directory as in Project.
 
 Added Validations Such as: 
 

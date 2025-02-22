@@ -21,7 +21,7 @@ public class KafkaProducerService {
 
     public void sendMessage(String message) {
         this.kafkaTemplate.send(TOPIC, message);
-        logger.info("Kafka Message Sent!");
+        logger.info("Kafka Notification :: ");
     }
 
     @Bean

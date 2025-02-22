@@ -1,6 +1,5 @@
-package org.zomato.nitin.validationUtil;
+package org.zomato.nitin.Utility;
 
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 

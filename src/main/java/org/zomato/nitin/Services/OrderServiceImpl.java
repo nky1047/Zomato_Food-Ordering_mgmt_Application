@@ -1,9 +1,11 @@
 package org.zomato.nitin.Services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.zomato.nitin.Exceptions.PlaceOrderException;
 import org.zomato.nitin.Model.Customer;
@@ -14,7 +16,7 @@ import org.zomato.nitin.Repositories.OrderRepository;
 import org.zomato.nitin.Repositories.RestaurantRepository;
 import org.zomato.nitin.kafka.KafkaOrderProducer;
 import org.zomato.nitin.kafka.KafkaProducerService;
-import org.zomato.nitin.validationUtil.ValidateOrderItems;
+import org.zomato.nitin.Utility.ValidateOrderItems;
 
 import java.util.*;
 
@@ -62,7 +64,7 @@ public class OrderServiceImpl {
     }
 
     public Optional<Order> getOrderById(String orderId) {
-        kafkaProducerService.sendMessage("getOrderById used for Order ID:"+orderId);
+        kafkaProducerService.sendMessage("getOrderById used for Order ID:" + orderId);
         return orderRepo.findById(orderId);
     }
 
@@ -71,39 +73,59 @@ public class OrderServiceImpl {
         Optional<Restaurant> restaurantWithCurrentOrder = restaurantRepo.findById(order.getRestaurantId());
         Optional<Customer> customerWithCurrentOrder = custRepo.findById(order.getCustomerId());
 
-
+//         CHECKING FOR INVALID CUSTOMER FIRST - then - further Validations
         if (!customerWithCurrentOrder.isPresent()) {
             logger.info("Invalid Customer!");
             throw new PlaceOrderException("Invalid Customer ID!");
         }
 
-        Order savedOrder = null;
+        Order savedOrder = null;                //THE ACTUAL ORDER TO BE SAVED POST VALIDATIONS
         Boolean isValideOrderDetails = FALSE;
         Boolean isduplicateOrderByCustomerforRestaurant = FALSE;
-        String duplicateOrderId = null;
+        Order alreadyInProgressOrder = null;    //THE Previous ORDER already in Progress
 
-        // CHECKING HERE IF CUSTOMER ALREADY HAS A ORDER ID THAT HAS STATUS "PREPARING"
+//         CHECKING HERE IF CUSTOMER ALREADY HAS A ORDER ID THAT HAS STATUS "PREPARING"
         List<String> currentCustomerOrderList = customerWithCurrentOrder.get().getMyOrdersList();
         if (currentCustomerOrderList != null) {
             for (int i = 0; i < currentCustomerOrderList.size(); i++) {
                 String tempCustistOrderId = currentCustomerOrderList.get(i);
                 if (tempCustistOrderId != null) {
                     Order tempOrder = getOrderById(tempCustistOrderId).get();
-                    if (tempOrder.getStatus().equals("PREPARING") && tempOrder.getRestaurantId().equals(order.getRestaurantId()))
+                    if (tempOrder.getStatus().equals("PREPARING") && tempOrder.getRestaurantId().equals(order.getRestaurantId())) {
                         isduplicateOrderByCustomerforRestaurant = TRUE;
+                        alreadyInProgressOrder = tempOrder;
+                    }
                 } else isduplicateOrderByCustomerforRestaurant = FALSE;
             }
         }
+        /*
+         * If Previous Order with Customer Already In Progress - then -
+         */
         if (isduplicateOrderByCustomerforRestaurant) {
-            logger.info("Customer already has a Order being Prepared by Restaurant!");
-            throw new PlaceOrderException("Dear Customer, An Order with is being Prepared by Requested Restaurant.");
+
+//           BELOW LOGIC TO PRETTY PRINT ORDERS in JSON
+
+            ObjectMapper mapper = new ObjectMapper();
+            String alreadyProgressOrderJSON = null;
+            try {
+                alreadyProgressOrderJSON = mapper.writeValueAsString(alreadyInProgressOrder);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+
+            logger.info("Customer already has a Order being Prepared by Restaurant! with Order as below :\n" + alreadyProgressOrderJSON);
+            throw new PlaceOrderException("Dear Customer, An Order with is being Prepared by Requested Restaurant as below: " + alreadyProgressOrderJSON);
         } else if (!restaurantWithCurrentOrder.isPresent()) {
             logger.info("Invalid Restaurant!");
             throw new PlaceOrderException("Invalid Restaurant ID!");
         } else if (!ValidateOrderItems.compareMaps(restaurantWithCurrentOrder.get().getItemTable(), order.getOrderItems())) {
             logger.info("Invalid Menu Items!");
             throw new PlaceOrderException("Ordered Menu Items not available!");
-        } else isValideOrderDetails = TRUE;
+        }
+        /*
+         *  IF Above Validation Are False - then -
+         */
+        else isValideOrderDetails = TRUE;
 
         try {
             if (isValideOrderDetails && isduplicateOrderByCustomerforRestaurant == FALSE && restaurantWithCurrentOrder.isPresent() && ValidateOrderItems.compareMaps(restaurantWithCurrentOrder.get().getItemTable(), order.getOrderItems())
