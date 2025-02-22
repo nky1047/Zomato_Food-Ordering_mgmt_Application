@@ -2,7 +2,6 @@ package org.zomato.nitin.Services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,7 @@ import org.zomato.nitin.Model.Restaurant;
 import org.zomato.nitin.Repositories.CustomerRepository;
 import org.zomato.nitin.Repositories.OrderRepository;
 import org.zomato.nitin.Repositories.RestaurantRepository;
-import org.zomato.nitin.kafka.KafkaOrderProducer;
+import org.zomato.nitin.kafka.Orders.KafkaOrderProducer;
 import org.zomato.nitin.kafka.KafkaProducerService;
 import org.zomato.nitin.Utility.ValidateOrderItems;
 

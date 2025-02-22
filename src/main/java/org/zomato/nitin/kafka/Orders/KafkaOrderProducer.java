@@ -1,4 +1,4 @@
-package org.zomato.nitin.kafka;
+package org.zomato.nitin.kafka.Orders;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.slf4j.Logger;

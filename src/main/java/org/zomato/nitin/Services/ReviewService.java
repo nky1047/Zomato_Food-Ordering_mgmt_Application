@@ -12,6 +12,8 @@ import org.zomato.nitin.Model.Review;
 import org.zomato.nitin.Repositories.OrderRepository;
 import org.zomato.nitin.Repositories.RestaurantRepository;
 import org.zomato.nitin.Repositories.ReviewsRepository;
+import org.zomato.nitin.kafka.Orders.KafkaOrderProducer;
+import org.zomato.nitin.kafka.ReviewEx.KafkaReviewProducerEg;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +33,9 @@ public class ReviewService {
     @Autowired
     private OrderServiceImpl orderService;
 
+    @Autowired
+    private KafkaReviewProducerEg kafkaReviewProducerEg;                  //AutoWired Producer Class
+
     public static final Logger logger = LoggerFactory.getLogger(ReviewService.class);
 //    GET ALL REVIEWS
     public List<Review> getAllReviews() {
@@ -46,6 +51,7 @@ public class ReviewService {
             Optional<Order> orderOptional= orderRepository.findById(review.getOrderId());
             if(orderOptional.isPresent()){
                 reviewRepo.save(review);
+                kafkaReviewProducerEg.sendReview(review);
                 Order latestOrder = orderOptional.get();
                 latestOrder.setRating(review.getRating());
                 latestOrder.setStatus("COMPLETED");
