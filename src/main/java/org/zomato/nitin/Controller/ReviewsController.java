@@ -4,16 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.zomato.nitin.Model.Restaurant;
+import org.zomato.nitin.Model.Order;
 import org.zomato.nitin.Model.Review;
-import org.zomato.nitin.Repositories.ReviewsRepository;
+import org.zomato.nitin.Services.OrderServiceImpl;
 import org.zomato.nitin.Services.RestaurantService;
 import org.zomato.nitin.Services.ReviewService;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/reviews")
+@RequestMapping("/api")
 public class ReviewsController {
     @Autowired
     private ReviewService reviewService;
@@ -29,21 +31,17 @@ public class ReviewsController {
         return ResponseEntity.ok(reviewService.getAllReviews());
     }
 
-    //    GET REVIEWS BY RESTAURANT ID
-    /*@GetMapping("/{restaurantId}/")
-    public List<Review> getReviewsOfRestaurant(@PathVariable String restaurantId) {
-        return reviewService.getReviewsByRestaurantId(restaurantId);
-    }*/
+    @GetMapping("/restaurants/{restaurantId}/reviews")
+    public ResponseEntity<Map<String, Object>> getReviewsByRestaurantId(@PathVariable String restaurantId) {
+        Map<String,Object> response = reviewService.getReviewsByRestaurantId(restaurantId);
+        return ResponseEntity.ok(response);
+    }
 
 //    ADD A REVEIEW FOR A RESTAURANT
-    /*@PostMapping("/add/{restaurantId}/")
-    public void addReviewtoRestaurant(@PathVariable String restaurantId, @RequestBody Review review) {
-         reviewService.addReviewtoRestaurant(restaurantId, review);
-    }*/
-
-    @PostMapping("/new")
-    public void addReviewtoRestaurant(@RequestBody Review review) {
-        reviewService.createNewReview(review);
+    @PostMapping("reviews/new")
+    public Order addReviewtoRestaurant(@RequestBody Review review) {
+        Order order = new ResponseEntity<Order>(reviewService.createNewReview(review),HttpStatus.CREATED).getBody();
+        return order;
     }
 
     //    DELETE A REVIEW

@@ -46,11 +46,12 @@ public class Order {
         this.orderId = orderId;
     }
 
+    @NonNull
     public String getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(String customerId) {
+    public void setCustomerId(@NonNull String customerId) {
         this.customerId = customerId;
     }
 
