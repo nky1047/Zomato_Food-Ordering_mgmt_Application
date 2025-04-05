@@ -27,10 +27,10 @@ public class Order {
     @NonNull
     @JsonProperty("orderValue")
     private String orderValue;
-    @JsonProperty("rating")
-    private String rating;
     @JsonProperty("status")
     private String status;
+    @JsonProperty("review")
+    private Review review;
 
     private Order(){
         super();
@@ -54,36 +54,31 @@ public class Order {
         this.customerId = customerId;
     }
 
+    @NonNull
     public String getRestaurantId() {
         return restaurantId;
     }
 
-    public void setRestaurantId(String restaurantId) {
+    public void setRestaurantId(@NonNull String restaurantId) {
         this.restaurantId = restaurantId;
     }
 
+    @NonNull
     public Hashtable<String, String> getOrderItems() {
         return orderItems;
     }
 
-    public void setOderItems(Hashtable<String, String> orderItems) {
+    public void setOrderItems(@NonNull Hashtable<String, String> orderItems) {
         this.orderItems = orderItems;
     }
 
+    @NonNull
     public String getOrderValue() {
         return orderValue;
     }
 
-    public void setOderValue(String orderValue) {
+    public void setOrderValue(@NonNull String orderValue) {
         this.orderValue = orderValue;
-    }
-
-    public String getRating() {
-        return rating;
-    }
-
-    public void setRating(String rating) {
-        this.rating = rating;
     }
 
     public String getStatus() {
@@ -94,9 +89,27 @@ public class Order {
         this.status = status;
     }
 
+    public Review getReview() {
+        return review;
+    }
+
+    public void setReview(Review review) {
+        this.review = review;
+    }
+
 
     // Constructor, toString(), equals(), hashCode()
 
+
+    public Order(String orderId, @NonNull String customerId, @NonNull String restaurantId, @NonNull Hashtable<String, String> orderItems, @NonNull String orderValue, String status, Review review) {
+        this.orderId = orderId;
+        this.customerId = customerId;
+        this.restaurantId = restaurantId;
+        this.orderItems = orderItems;
+        this.orderValue = orderValue;
+        this.status = status;
+        this.review = review;
+    }
 
     @Override
     public String toString() {
@@ -106,31 +119,8 @@ public class Order {
                 ", restaurantId='" + restaurantId + '\'' +
                 ", orderItems=" + orderItems +
                 ", orderValue='" + orderValue + '\'' +
-                ", rating='" + rating + '\'' +
                 ", status='" + status + '\'' +
+                ", review=" + review +
                 '}';
-    }
-
-    public Order(String orderId, String customerId, String restaurantId, Hashtable<String, String> orderItems, String orderValue, String rating, String status) {
-        this.orderId = orderId;
-        this.customerId = customerId;
-        this.restaurantId = restaurantId;
-        this.orderItems = orderItems;
-        this.orderValue = orderValue;
-        this.rating = rating;
-        this.status = status;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Order order = (Order) o;
-        return Objects.equals(orderId, order.orderId) && Objects.equals(customerId, order.customerId) && Objects.equals(restaurantId, order.restaurantId) && Objects.equals(orderItems, order.orderItems) && Objects.equals(orderValue, order.orderValue) && Objects.equals(rating, order.rating) && Objects.equals(status, order.status);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(orderId, customerId, restaurantId, orderItems, orderValue, rating, status);
     }
 }

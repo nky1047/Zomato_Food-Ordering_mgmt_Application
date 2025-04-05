@@ -58,17 +58,23 @@ public class OrderServiceImpl {
         return orderRepo.findAll();
     }
 
-    public List<Order> getOrdersByRestaurantId(String restaurantId) {
-        return orderRepo.findByRestaurantId(restaurantId);
+    public Map<String, Object> getOrdersByRestaurantId(String restaurantId) {
+        List<Order> orders = orderRepo.findOrdersByRestaurantIdWithReviews(restaurantId);
+        Optional<Restaurant> restaurantOptional = restaurantRepo.findById(restaurantId);
+        Restaurant restaurant = restaurantOptional.get();
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("Restaurant ID",restaurant.getRestaurantid());
+        response.put("Restaurant Name",restaurant.getRestaurantName());
+        response.put("Orders",orders);
+        return response;
     }
 
     public Optional<Order> getOrderById(String orderId) {
-        kafkaProducerService.sendMessage("getOrderById used for Order ID:" + orderId);
+       // kafkaProducerService.sendMessage("getOrderById used for Order ID:" + orderId);
         return orderRepo.findById(orderId);
     }
 
     public Order createOrderToRestaurant(Order order) {
-
         Optional<Restaurant> restaurantWithCurrentOrder = restaurantRepo.findById(order.getRestaurantId());
         Optional<Customer> customerWithCurrentOrder = custRepo.findById(order.getCustomerId());
 
@@ -156,7 +162,6 @@ public class OrderServiceImpl {
         return savedOrder;
     }
 
-    // @KafkaListener(topics = "kafka_topic_orders" , groupId = "order_group")
     public Order updateOrderStatus(Order updatedOrder) {
         Optional<Order> orderOptional = orderRepo.findById(updatedOrder.getOrderId());
         Optional<Restaurant> restaurantWithCurrentOrder = restaurantRepo.findById(updatedOrder.getRestaurantId());
@@ -165,13 +170,9 @@ public class OrderServiceImpl {
             throw new PlaceOrderException("Ordered Menu Items not available!");
         }
 
-        if (orderOptional.isPresent()
-            //  && ValidateOrderItems.compareMaps(restaurantWithCurrentOrder.get().getItemTable(), updatedOrder.getOrderItems())
-        ) {
+        if (orderOptional.isPresent()) {
             logger.info("UpdateOrder with Order ID: {}", updatedOrder.getOrderId());
             Order latestOrder = updatedOrder;
-            //latestOrder.setStatus("Processing");
-            //latestOrder.setRating(null);
             logger.info("Processing.. Order with ID: {}", latestOrder.getOrderId());
             orderRepo.save(latestOrder);
             // KAFKA - Message Sent to Topic
