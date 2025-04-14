@@ -56,4 +56,31 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.zomato.nitin</groupId>
+                <artifactId>Zomato</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>org.zomato.nitin.StartingZomatoApplication</mainClass>
+                    <layout>JAR</layout>
+                </configuration>
+                <executions>
+                <execution>
+                    <goals>
+                        <goal>repackage</goal>
+                    </goals>
+                </execution>
+            </executions>
+            </plugin>
+        </plugins>
+        <finalName>
+            spring-boot-docker-zomato
+        </finalName>
+    </build>
+
 </project>
