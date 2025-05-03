@@ -8,6 +8,7 @@ import org.zomato.nitin.Exceptions.CustomerException;
 import org.zomato.nitin.Model.Customer;
 import org.zomato.nitin.Repositories.CustomerRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +46,12 @@ public class CustomerServiceImpl {
         } else {
             try {
                 //  kafkaProducerServicePlaceOrder.sendCustomerMessage("New customer created with Id:"+customer.getCustomerId());
+
+//                This check is important, so no Customer is created with already some Order in OrderlIst
+                if(customer.getMyOrdersList().get(0)!=null){
+                    customer.setMyOrdersList(new ArrayList<>());
+                }
+
                 return custRepo.save(customer);
             } catch (CustomerException e) {
                 logger.error("Error occurred in Service Class while saving the Customer", e);
